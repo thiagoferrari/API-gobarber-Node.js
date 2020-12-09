@@ -3,6 +3,8 @@
 
 import { Model, Sequelize } from 'sequelize'
 
+
+
 class User extends Model {
     static init(sequelize) {
         super.init(
@@ -18,3 +20,5 @@ class User extends Model {
         )
     }
 }
+
+export default User
