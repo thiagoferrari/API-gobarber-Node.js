@@ -3,12 +3,18 @@ import { Router } from 'express'
 import UserController from './app/controllers/UserController'
 import SessionController from './app/controllers/SessionController'
 
+import authMiddleware from './app/middlewares/auth'
 
 const routes = new Router()
 
 // aqui vamos tratar a req, res pelo UserController.store:
 routes.post('/users', UserController.store)
 routes.post('/sessions', SessionController.store)
+
+/* esse routes.use não interfere em nada acima, só nas rotas embaixo dele!*/
+routes.use(authMiddleware)
+
+routes.put('/users', UserController.update)
 
 
 export default routes
