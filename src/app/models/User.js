@@ -37,6 +37,11 @@ class User extends Model {
         return this
     }
 
+    /*depois de ter associado na nova migration a nova coluna
+                                        vamos associar os models*/
+    static associate(models) {
+        this.belongsTo(models.File, { foreignKey: 'avatar_id' })
+    }
 
     // o compare() retorna false para senhas diferentes, true para certo..
     checkPassword(password) {

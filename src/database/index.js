@@ -23,6 +23,11 @@ class Database {
 
         // aqui vamos percorrer todos os models (classes dentro deles)
         models.map(model => model.init(this.connection))
+
+        //abaixo uma condicional maluca: 
+        //isso para poder executar (apenas nas classes que contém o método associate - User não tem)
+        models.map(model => model.associate && model.associate(this.connection.models))
+
     }
 
 }
