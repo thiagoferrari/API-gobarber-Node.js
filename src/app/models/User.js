@@ -40,8 +40,9 @@ class User extends Model {
     /*depois de ter associado na nova migration a nova coluna
                                         vamos associar os models*/
     static associate(models) {
-        this.belongsTo(models.File, { foreignKey: 'avatar_id' })
-    }
+        this.belongsTo(models.File, { foreignKey: 'avatar_id', as: 'avatar' })
+    } /*                                                  esse as: 'avatar' faz com que o
+                                                include do ProviderController retorne um nome customizado */
 
     // o compare() retorna false para senhas diferentes, true para certo..
     checkPassword(password) {
