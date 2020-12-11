@@ -2,13 +2,15 @@
 
 import Sequelize from 'sequelize'
 
-// importando model de users:
+// importando models
 import User from '../app/models/User'
+import File from '../app/models/File'
+
 
 // import responsa por trazer parâmetros do database
 import databaseConfig from '../config/database'
 
-const models = [User]
+const models = [User, File]
 
 class Database {
     constructor() {
