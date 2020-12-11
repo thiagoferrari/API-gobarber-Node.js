@@ -46,6 +46,9 @@ module.exports = {
 
 /*
 
+PARA RODAR MIGRATION:
+yarn sequelize db:migrate
+
 PARA DESFAZER TODAS AS MIGRATIONS:
 yarn sequelize db:migrate:undo:all
 

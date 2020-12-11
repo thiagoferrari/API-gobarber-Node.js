@@ -1,16 +1,31 @@
 // estamos criando uma Sessão e por isso vamos criar um novo controler 
 
 import jwt from 'jsonwebtoken'
+import * as Yup from 'yup'
 
 import User from '../models/User'
-
 import authConfig from '../../config/auth'
 
 class SessionController {
     async store(req, res) {
+        // ANTES DE TUDO, VALIDAÇÕES:
+
+        /*abaixo o Yup espera um objeto (será o req.body) que tenha esta shape:*/
+        const schema = Yup.object().shape({
+            email: Yup.string().email().required(),
+            password: Yup.string().required(), //min carac. não precisa
+        })
+
+        // dito isso, se for verdade que o isValid deu erro, então:
+        if (!(await schema.isValid(req.body))) {
+            return res.status(400).json({ error: 'Validations fails.' })
+        }
+
+        
+
         const { email, password } = req.body
 
-        // VALIDAÇÕES:
+        // VERIFICAÇÕES:
         // 1º: verificando se o email passado existe:
         const user = await User.findOne({ where: { email } })
 
