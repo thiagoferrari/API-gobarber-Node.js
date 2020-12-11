@@ -14,7 +14,8 @@ class ProviderController {
                 {
                     model: File,
                     as: 'avatar',
-                    attributes: ['name', 'path']
+                    attributes: ['name', 'path', 'url']
+                    /* url para facilitar ao front-end ver o avatar:*/
                 },
             ],
         })
