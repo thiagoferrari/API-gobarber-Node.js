@@ -2,9 +2,36 @@ import Appointment from '../models/Appointment'
 import * as Yup from 'Yup'
 import { startOfHour, parseISO, isBefore } from 'date-fns'
 import User from '../models/User'
-
+import File from '../models/File'
 
 class AppointmentController {
+    /**
+     * index abaixo para listar todos agendamentos de um user
+     */
+    async index(req, res) {
+        const appointments = await Appointment.findAll({
+            where: { user_id: req.userId, canceled_at: null }, // agenda. não cancelados
+            order: [['date', 'DESC']],
+            attributes: ['id', 'date'],
+            include: [ // a partir da FK entre Appointment e User, me traga(include) os seguintes dados:
+                {
+                    model: User,
+                    as: 'provider',
+                    attributes: ['id', 'name'],
+                    include: [ // a partir da FK entre User e File, me traga(include) os seguintes dados:
+                        {
+                            model: File,
+                            as: 'avatar',
+                            attributes: ['id', 'path', 'url']
+                        }
+                    ]
+                }
+            ]
+        })
+
+        return res.json(appointments)
+    }
+
     async store(req, res) {
         /**
          * VALIDAÇÕES:
@@ -14,7 +41,7 @@ class AppointmentController {
             date: Yup.date().required(),
         })
 
-        
+
         /**
          * SE O req.body for válido de acordo com o schema:
          */
@@ -54,7 +81,7 @@ class AppointmentController {
          * checando se prestador está com horário escolhido disponível
          */
 
-         /* select no banco procurando por este horário: */
+        /* select no banco procurando por este horário: */
         const checkAvailability = await Appointment.findOne({
             where: {
                 provider_id,
@@ -64,10 +91,10 @@ class AppointmentController {
         })
 
         if (checkAvailability) {
-            return res.status(400).json({error: "horário não disponível"})
+            return res.status(400).json({ error: "horário não disponível" })
         }
 
-        
+
         /**
          *  SE DER TUDO CERTO, PROSSEGUIR COM INSERT NO BANCO:
          */
