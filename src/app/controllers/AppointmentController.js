@@ -9,10 +9,17 @@ class AppointmentController {
      * index abaixo para listar todos agendamentos de um user
      */
     async index(req, res) {
+        const { page = 1 } = req.query // por default o query params recebe a page 1
+
         const appointments = await Appointment.findAll({
             where: { user_id: req.userId, canceled_at: null }, // agenda. não cancelados
             order: [['date', 'DESC']],
             attributes: ['id', 'date'],
+
+            /* controlando itens por página: */
+            limit: 20, // o banco vai limitar a busca em 20 itens
+            offset: (page - 1) * 20, // offset controla quantas linhas vai pular no select
+
             include: [ // a partir da FK entre Appointment e User, me traga(include) os seguintes dados:
                 {
                     model: User,
