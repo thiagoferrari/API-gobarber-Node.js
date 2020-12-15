@@ -62,7 +62,7 @@ class AppointmentController {
 
 
         /**
-         * checando se este provider_id existe:
+         * checando se o provider_id escolhido existe:
          */
         const checkisProvider = await User.findOne({
             where: { id: provider_id, provider: true }
@@ -70,6 +70,15 @@ class AppointmentController {
 
         if (!checkisProvider) {
             return res.status(401).json({ error: 'Você pode somente agendar com provedores' })
+        }
+
+
+        /**
+         * checagem: se user logado é igual ao user que ocorrerá o agendam.
+         *                              (não pode marcar consigo mesmo)
+         */
+        if (req.userId == provider_id) {
+            return res.status(401).json({ error: 'Você não pode agendar consigo mesmo' })
         }
 
 
