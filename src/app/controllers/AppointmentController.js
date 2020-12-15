@@ -6,6 +6,8 @@ import User from '../models/User'
 import File from '../models/File'
 import Notification from '../schemas/Notification'
 
+import Mail from '../../lib/Mail'
+
 class AppointmentController {
     /**
      * index abaixo para listar todos agendamentos de um user
@@ -149,7 +151,15 @@ class AppointmentController {
 
     async delete(req, res) {
         // buscando agendamento no banco (linha):
-        const appointment = await Appointment.findByPk(req.params.id)
+        const appointment = await Appointment.findByPk(req.params.id, {
+            include: [ // select de dados do cancelamento [uso no e-mail]
+                {
+                    model: User,
+                    as: 'provider', // preciso usar o 'as' devido as duas FK no model Appointment
+                    attributes: ['name', 'email']
+                }
+            ]
+        })
 
         // se o user que está tentando cancelar não for o que criou..:
         if (appointment.user_id !== req.userId) {
@@ -158,12 +168,13 @@ class AppointmentController {
             })
         }
 
-        /**
-         * bloqueando cancelamentos 2 hr antes do agendamento:
+        /** 
+         * CANCELAMENTO DE AGENDAMENTOS
          */
         // aqui vou diminuir -2 horas do hr agendado
         const dateWithSub = subHours(appointment.date, 2)
 
+        // bloqueando cancelamentos 2 hr antes do agendamento:
         if (isBefore(dateWithSub, new Date())) {
             return res.status(401).json({
                 error: 'você somente pode cancelar um agendam. até duas horas antes de ocorrer'
@@ -175,6 +186,12 @@ class AppointmentController {
 
         // commit no mongo com os dados alterados:
         await appointment.save()
+
+        await Mail.sendMail({
+            to: `${appointment.provider.name} <${appointment.provider.email}>`,
+            subject: 'Agendamento cancelado',
+            text: 'Você tem um novo cancelamento',
+        })
 
         return res.json(appointment)
     }
