@@ -148,19 +148,35 @@ class AppointmentController {
     }
 
     async delete(req, res) {
-        // buscando agendamento no banco:
+        // buscando agendamento no banco (linha):
         const appointment = await Appointment.findByPk(req.params.id)
 
         // se o user que está tentando cancelar não for o que criou..:
         if (appointment.user_id !== req.userId) {
-            return res.status(401).json({ error: 'voce não tem permissão para cancelar este agendamento' })
+            return res.status(401).json({
+                error: 'voce não tem permissão para cancelar este agendamento'
+            })
         }
 
+        /**
+         * bloqueando cancelamentos 2 hr antes do agendamento:
+         */
+        // aqui vou diminuir -2 horas do hr agendado
         const dateWithSub = subHours(appointment.date, 2)
 
-        
+        if (isBefore(dateWithSub, new Date())) {
+            return res.status(401).json({
+                error: 'você somente pode cancelar um agendam. até duas horas antes de ocorrer'
+            })
+        }
 
-        return res.json()
+        const NOW = new Date().toJSON()
+        appointment.canceled_at = NOW
+
+        // commit no mongo com os dados alterados:
+        await appointment.save()
+
+        return res.json(appointment)
     }
 }
 
