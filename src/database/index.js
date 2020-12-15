@@ -35,7 +35,10 @@ class Database {
     mongo() {
         this.mongoConnection = mongoose.connect(
             'mongodb://localhost:27017/gobarber', // aqui passo a porta/banco de conex.
-            { useNewUrlParser: true, useFindAndModify: true }
+            {
+                useNewUrlParser: true,
+                useFindAndModify: true // Agora posso usar findByIdAndUpdate
+            }
 
             /* useNewUrlParser serve para usar o novo format URL mongo
                 useFindAndModify: tipo algoritmo de alterações no banco*/

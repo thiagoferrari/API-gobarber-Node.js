@@ -23,10 +23,20 @@ class NotificationController {
         const notifications = await Notification.find({
             user: req.userId
         })
-            .sort({createdAt: 'desc'})
+            .sort({ createdAt: 'desc' })
             .limit(20)
 
         return res.json(notifications)
+    }
+
+    async update(req, res) {
+        const notification = await Notification.findByIdAndUpdate(
+            req.params.id, //é o id do registro no mongo que foi passado como parâm. na query do frontend
+            { read: true }, // aqui falo que o campo read recebe true
+            { new: true } // aqui retornamos o registro alterado
+        )
+
+        return res.json(notification)
     }
 }
 

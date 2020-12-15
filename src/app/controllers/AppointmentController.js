@@ -1,6 +1,6 @@
 import Appointment from '../models/Appointment'
 import * as Yup from 'Yup'
-import { startOfHour, parseISO, isBefore, format } from 'date-fns'
+import { startOfHour, parseISO, isBefore, format, subHours } from 'date-fns'
 import pt from 'date-fns/locale/pt'
 import User from '../models/User'
 import File from '../models/File'
@@ -145,6 +145,22 @@ class AppointmentController {
 
 
         return res.json(appointment)
+    }
+
+    async delete(req, res) {
+        // buscando agendamento no banco:
+        const appointment = await Appointment.findByPk(req.params.id)
+
+        // se o user que está tentando cancelar não for o que criou..:
+        if (appointment.user_id !== req.userId) {
+            return res.status(401).json({ error: 'voce não tem permissão para cancelar este agendamento' })
+        }
+
+        const dateWithSub = subHours(appointment.date, 2)
+
+        
+
+        return res.json()
     }
 }
 
