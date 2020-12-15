@@ -157,6 +157,11 @@ class AppointmentController {
                     model: User,
                     as: 'provider', // preciso usar o 'as' devido as duas FK no model Appointment
                     attributes: ['name', 'email']
+                },
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['name']
                 }
             ]
         })
@@ -187,10 +192,23 @@ class AppointmentController {
         // commit no mongo com os dados alterados:
         await appointment.save()
 
+
+        /**
+         * FUNÇÃO QUE DISPARA E-MAIL DEPOIS DE CANCELAR AGENDAMENTO:
+         */
         await Mail.sendMail({
             to: `${appointment.provider.name} <${appointment.provider.email}>`,
             subject: 'Agendamento cancelado',
-            text: 'Você tem um novo cancelamento',
+            template: 'cancellation',
+            context: { //variáveis que serão usadas dentro do corpo do email:
+                provider: appointment.provider.name,
+                user: appointment.user.name,
+                date: format(appointment.date, // a do agendamento está aqui!
+                    "'dia' dd 'de' MMMM', às' H:mm'h'", // essa é a 'máscara' que a data recebe
+                    {
+                        locale: pt,
+                    }),
+            },
         })
 
         return res.json(appointment)
