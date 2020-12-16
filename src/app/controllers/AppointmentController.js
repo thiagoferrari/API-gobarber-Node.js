@@ -6,7 +6,8 @@ import User from '../models/User'
 import File from '../models/File'
 import Notification from '../schemas/Notification'
 
-import Mail from '../../lib/Mail'
+import Cancellation from '../jobs/CancellationMail'
+import Queue from '../../lib/Queue'
 
 class AppointmentController {
     /**
@@ -192,24 +193,8 @@ class AppointmentController {
         // commit no mongo com os dados alterados:
         await appointment.save()
 
-
-        /**
-         * FUNÇÃO QUE DISPARA E-MAIL DEPOIS DE CANCELAR AGENDAMENTO:
-         */
-        await Mail.sendMail({
-            to: `${appointment.provider.name} <${appointment.provider.email}>`,
-            subject: 'Agendamento cancelado',
-            template: 'cancellation',
-            context: { //variáveis que serão usadas dentro do corpo do email:
-                provider: appointment.provider.name,
-                user: appointment.user.name,
-                date: format(appointment.date, // a do agendamento está aqui!
-                    "'dia' dd 'de' MMMM', às' H:mm'h'", // essa é a 'máscara' que a data recebe
-                    {
-                        locale: pt,
-                    }),
-            },
-        })
+        // abaixo vamos disparar o e-mail de cancelamento
+        await Queue.add(Cancellation.key, { appointment })
 
         return res.json(appointment)
     }

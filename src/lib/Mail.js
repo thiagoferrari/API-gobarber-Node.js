@@ -50,11 +50,11 @@ class Mail {
      * sendMail é a função responsa por disparar. nela vou concat. o destinatário + corpoMsg
      */
     sendMail(message) {
-    return this.transporter.sendMail({
-      ...mailConfig.default,
-      ...message,
-    });
-  }
+        return this.transporter.sendMail({
+            ...mailConfig.default,
+            ...message,
+        });
+    }
 }
 
 export default new Mail()
