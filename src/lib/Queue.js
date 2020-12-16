@@ -43,8 +43,13 @@ class Queue {
             /* aqui desestrutu. a fila por trás do job.key expecífico */
             const { bee, handle } = this.queues[job.key]
 
-            bee.process(handle) // aqui executamos a fila
+            bee.on('failed', this.handleFailure).process(handle) // aqui executamos a fila
         })
+    }
+
+    /* handleFailure é executado quando se ocorre falha em fila */
+    handleFailure(job, err) {
+        console.log(`Queue ${job.queue.name}: FAILED`, err)
     }
 }
 
