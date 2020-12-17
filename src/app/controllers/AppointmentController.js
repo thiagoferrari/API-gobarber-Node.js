@@ -19,7 +19,7 @@ class AppointmentController {
         const appointments = await Appointment.findAll({
             where: { user_id: req.userId, canceled_at: null }, // agenda. não cancelados
             order: [['date', 'DESC']],
-            attributes: ['id', 'date'],
+            attributes: ['id', 'date', 'past', 'cancelable'],
 
             /* controlando itens por página: */
             limit: 20, // o banco vai limitar a busca em 20 itens
