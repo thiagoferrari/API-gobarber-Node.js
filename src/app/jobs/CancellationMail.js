@@ -26,12 +26,12 @@ class CancellationMail {
                 provider: appointment.provider.name,
                 user: appointment.user.name,
                 date: format(parseISO(appointment.date), // a do agendamento está aqui!
-                "'dia' dd 'de' MMMM', às' H:mm'h'", // essa é a 'máscara' que a data recebe
+                    "'dia' dd 'de' MMMM', às' H:mm'h'", // essa é a 'máscara' que a data recebe
                     {
-                locale: pt,
-            }),
+                        locale: pt,
+                    }),
             },
-})
+        })
     }
 }
 
