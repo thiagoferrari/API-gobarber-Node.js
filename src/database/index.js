@@ -34,7 +34,7 @@ class Database {
 
     mongo() {
         this.mongoConnection = mongoose.connect(
-            'mongodb://localhost:27017/gobarber', // aqui passo a porta/banco de conex.
+            process.env.MONGO_URL, // aqui passo a porta/banco de conex.
             {
                 useNewUrlParser: true,
                 useFindAndModify: true // Agora posso usar findByIdAndUpdate

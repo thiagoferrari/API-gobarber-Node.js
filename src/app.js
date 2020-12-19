@@ -1,5 +1,7 @@
 // a partir do node 14 se pode usar o import
 
+import 'dotenv/config' //importando variáveis de ambiente
+
 import express from 'express'
 import path from 'path'
 import Youch from 'youch'
@@ -46,10 +48,17 @@ class App {
         // express entende que middlewares com 4 params é p/ tratar erros:
         this.server.use(async (err, req, res, next) => {
 
-            // o youch vai retornar os erros [ele irá para o front-end]
-            const errors = await new Youch(err, req).toJSON()
+            /* se estivermos em amb. de dev., vamos pegar a variável do arquivo ENV e
+                        o erro vai aparecer no browser, insomnia*/
 
-            return res.status(500).json(errors)
+            if (process.env.NODE_ENV === 'development') {
+                const errors = await new Youch(err, req).toJSON()
+
+                return res.status(500).json(errors)
+            }
+
+            // o youch vai retornar uma msg que não expõe o erro (não é dev.)
+            return res.status(500).json({ error: 'Internal server error'})
         })
     }
 }
